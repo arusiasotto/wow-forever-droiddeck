@@ -1,0 +1,9 @@
+## Interface: 11509, 16001
+## Title: GlassClean
+## Notes: Liquid Glass HUD and hide leftover GodMacro / Blizzard chrome.
+## Author: Arusia
+## Version: 1
+## Dependencies: GodMacro
+## DefaultState: enabled
+
+GlassClean.lua

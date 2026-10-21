@@ -1,3 +1,3 @@
-__pycache__/
-*.pyc
-*.log
+scripts/*.bak
+scripts/wow-forever.env
+scripts/wow-forever-storage.env
