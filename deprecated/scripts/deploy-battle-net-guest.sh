@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SERIAL="${ADB_SERIAL:-912601210098}"
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 URI="content://com.droiddeck.launcher.agent"
 
 guest() {
