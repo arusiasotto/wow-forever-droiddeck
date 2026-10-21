@@ -23,18 +23,20 @@ Setup helpers (adb deploy, Proton install, optional env) live under **[deprecate
 
 ---
 
-## 2. Install launch scripts (guest)
+## 2. How DroidDeck launches the game
 
-Only **two** files — copy to `/usr/local/bin/`:
+DroidDeck can start the shortcut **without opening the Steam client**. That path usually **does not need** the focus helper scripts (picture and input work with plain Steam launch options).
 
-| Guest | Repo |
-|-------|------|
-| `Launch-BattleNet.sh` | [`scripts/Launch-BattleNet.sh`](scripts/Launch-BattleNet.sh) |
-| `droiddeck-steamgame-stamp.sh` | [`scripts/droiddeck-steamgame-stamp.sh`](scripts/droiddeck-steamgame-stamp.sh) |
+If you **open Steam** in the session (library, updates, browsing) and launch Battle.net from there, gamescope often keeps focus on **Steam (app 769)** instead of Battle.net — **sound but no picture**. For that path, use the **launcher + stamper** in §3.
 
-Or from a PC with adb: **`./deprecated/scripts/deploy-battle-net-guest.sh`**
+| DroidDeck behavior | Launch options (Battle.net shortcut) | Guest scripts |
+|--------------------|--------------------------------------|---------------|
+| **Launch without Steam** (recommended) | `%command%` | Optional — not required for focus |
+| **Steam running / launch from Steam UI** | `/usr/local/bin/Launch-BattleNet.sh %command%` | **Required:** [`Launch-BattleNet.sh`](scripts/Launch-BattleNet.sh) + [`droiddeck-steamgame-stamp.sh`](scripts/droiddeck-steamgame-stamp.sh) in `/usr/local/bin/` |
 
-No config file is required on the guest for a standard install.
+Install the two scripts (adb: **`./deprecated/scripts/deploy-battle-net-guest.sh`**) if you use the Steam-in-session column. No `/usr/local/etc/wow-forever.env` needed for a standard install.
+
+Disabling the **in-game Steam overlay** alone did **not** fix the focus issue in our testing; the split above matches what we saw on device.
 
 ---
 
@@ -44,9 +46,9 @@ No config file is required on the guest for a standard install.
 |--------|--------|
 | **Target** | `Battle.net Launcher.exe` |
 | **Compatibility tool** | **DroidDeck-Proton 11-9.1 ARM64EC WoW** |
-| **Launch options** | `/usr/local/bin/Launch-BattleNet.sh %command%` |
+| **Launch options** | See §2 (`%command%` or `Launch-BattleNet.sh %command%`) |
 
-Linux **Vulkan driver** in DroidDeck (Turnip, etc.).
+Pick a **Linux Vulkan driver** in DroidDeck (Turnip, etc.).
 
 ---
 
