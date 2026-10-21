@@ -29,7 +29,7 @@ Older direct-WoW / Storage tiles and pre–tier-8 stacks live under **[deprecate
 
 4. Restart Steam → **Properties → Compatibility** → **`DroidDeck-Proton 11-9.1 ARM64EC WoW`**.
 
-   Use this tool for **Battle.net only**. Keep stock **`DroidDeck-Proton 11-9.1`** or GE for other games.
+   Assign this tool to your **Battle.net** shortcut. Using it for **other games is unverified** (we only test WoW via Battle.net on this build).
 
    **adb:** `scripts/install-proton-build-guest.sh` (release zip) or extract the `.tar.gz` manually (see above).
 
