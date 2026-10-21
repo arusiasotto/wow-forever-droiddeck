@@ -1,12 +1,12 @@
 # wow-forever-droiddeck
 
-Setup scripts for **World of Warcraft Forever** on [DroidDeck](https://github.com/Droid-Deck/DroidDeck) via the **Battle.net Steam shortcut** and **Play** in the client (`WowB-ARM64.exe` in the same Proton prefix).
+Setup scripts for **World of Warcraft** on [DroidDeck](https://github.com/Droid-Deck/DroidDeck) via the **Battle.net Steam shortcut** and **Play** in the client (same Proton prefix as the launcher).
 
-This repo is **not** the game or Proton — only launch helpers for the Battle.net container.
+This repo is **not** the game or Proton — only two launch helpers on the guest.
 
 Unofficial. Not affiliated with Blizzard, DroidDeck, Valve, or Wine.
 
-Older direct-WoW / Storage tiles and pre–tier-8 stacks live under **[deprecated/](deprecated/)**.
+Older experiments live under **[deprecated/](deprecated/)**.
 
 ---
 
@@ -21,35 +21,22 @@ Older direct-WoW / Storage tiles and pre–tier-8 stacks live under **[deprecate
    tar -xzf /path/to/DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz -C "$TOOLS"
    ```
 
-3. Folder must be:
+3. After restart, Steam **Compatibility** → **`DroidDeck-Proton 11-9.1 ARM64EC WoW`** on the Battle.net shortcut.
 
-   ```text
-   …/compatibilitytools.d/DroidDeck-Proton 11-9.1 ARM64EC WoW
-   ```
-
-4. Restart Steam → **Properties → Compatibility** → **`DroidDeck-Proton 11-9.1 ARM64EC WoW`**.
-
-   Assign this tool to your **Battle.net** shortcut. Using it for **other games is unverified** (we only test WoW via Battle.net on this build, and Hollow Knight).
-
-   **adb:** `scripts/install-proton-build-guest.sh` (release zip) or extract the `.tar.gz` manually (see above).
+   Other games on this tool are **unverified** (we test WoW via Battle.net; Hollow Knight was a one-off x86 spot-check).
 
 ---
 
 ## 2. Install scripts (guest)
 
-| Install as | From repo |
+Copy **two** files to `/usr/local/bin/` (or run **`./scripts/deploy-battle-net-guest.sh`** from a host with adb):
+
+| Guest path | Repo file |
 |------------|-----------|
-| `/usr/local/bin/droiddeck-steamgame-stamp.sh` | `scripts/droiddeck-steamgame-stamp.sh` |
 | `/usr/local/bin/Launch-BattleNet.sh` | `scripts/Launch-BattleNet.sh` |
-| `/usr/local/etc/wow-forever.env` | copy from `scripts/wow-forever.env.example` (edit paths if needed) |
+| `/usr/local/bin/droiddeck-steamgame-stamp.sh` | `scripts/droiddeck-steamgame-stamp.sh` |
 
-**Host with adb:**
-
-```bash
-./scripts/deploy-battle-net-guest.sh
-```
-
-(`ADB_SERIAL` if needed.)
+No **`/usr/local/etc/wow-forever.env`** is required. A standard install uses Steam’s prefix, app id, compat tool, and session Vulkan ICD. Optional overrides: see **`scripts/wow-forever.env.example`** (only create `/usr/local/etc/wow-forever.env` if you need custom paths or FEX flags).
 
 ---
 
@@ -63,15 +50,13 @@ Older direct-WoW / Storage tiles and pre–tier-8 stacks live under **[deprecate
 
 Pick a **Linux Vulkan driver** in DroidDeck (Turnip, etc.).
 
-**Focus:** `Launch-BattleNet.sh` starts **`droiddeck-steamgame-stamp.sh`** in the background, then runs Proton. Only these **two** scripts are required on the guest.
-
 ---
 
 ## 4. Install WoW and play
 
 1. Launch Battle.net from the shortcut.
-2. Install WoW to **`C:\Program Files (x86)\World of Warcraft`** (default). Optional overrides: `BNET_DIR`, `WOW_ROOT` in `wow-forever.env`.
-3. **Battle.net → WoW → Settings → Game Settings → Additional command line arguments:**
+2. Install the game to **`C:\Program Files (x86)\World of Warcraft`** (Battle.net default).
+3. **Battle.net → game → Settings → Game Settings → Additional command line arguments:**
 
    ```text
    -d3d11
@@ -81,20 +66,17 @@ Pick a **Linux Vulkan driver** in DroidDeck (Turnip, etc.).
 
 Do **not** put `d3d11` / `dxgi` in `WINEDLLOVERRIDES`.
 
-Logs (default): `/tmp/wow-launch/<appid>/bnet-launch.log` (`WOW_LOGDIR` in env).
+Logs (default): `/tmp/wow-launch-<steam-appid>/bnet-launch.log`
 
 ---
 
-## Scripts (supported)
+## Other scripts
 
 | Script | Role |
 |--------|------|
-| `Launch-BattleNet.sh` | Steam entry: stamper + Proton + Battle.net |
-| `droiddeck-steamgame-stamp.sh` | Gamescope `STEAM_GAME` / focus loop |
-| `deploy-battle-net-guest.sh` | adb install §2 |
-| `install-proton-build-guest.sh` | adb + WoW-tagged Proton into `compatibilitytools.d` |
-| `rename-proton-wow-tool.sh` | Guest: rename old Proton folder to **… ARM64EC WoW** |
-| `deploy-rename-proton-guest.sh` | adb wrapper for rename script |
+| `deploy-battle-net-guest.sh` | adb → install the two launch scripts |
+| `install-proton-build-guest.sh` | adb → WoW Proton into `compatibilitytools.d` |
+| `rename-proton-wow-tool.sh` / `deploy-rename-proton-guest.sh` | Rename an old Proton folder to **… ARM64EC WoW** |
 
 ---
 
