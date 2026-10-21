@@ -1,3 +1,4 @@
 scripts/*.bak
 scripts/wow-forever.env
 scripts/wow-forever-storage.env
+deprecated/scripts/wow-forever-storage.env

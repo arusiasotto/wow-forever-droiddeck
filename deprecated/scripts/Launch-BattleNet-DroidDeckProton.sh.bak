@@ -1,0 +1,95 @@
+#!/bin/bash
+# DroidDeck helper: run the Battle.net launcher under DroidDeck-Proton (x86 via
+# FEX) with the two Wine ARM64 fixes in the environment, so that Play can start
+# the native ARM64 WoW client in the same prefix.
+#
+# Steam shortcut: target "Battle.net Launcher.exe", compat tool DroidDeck-Proton,
+# launch options:  /usr/local/bin/Launch-BattleNet.sh %command%
+# Steam then runs this script natively; the Proton wrap is invoked from here.
+set -uo pipefail
+
+APPID="${SteamAppId:-4153382437}"
+if [[ "$APPID" == "0" || ${#APPID} -gt 10 ]]; then APPID=4153382437; fi
+STEAM_ROOT="${STEAM_COMPAT_CLIENT_INSTALL_PATH:-/root/.local/share/Steam}"
+PREFIX="${STEAM_COMPAT_DATA_PATH:-$STEAM_ROOT/steamapps/compatdata/$APPID}"
+TOOL="${WOW_PROTON_DIR:-$STEAM_ROOT/compatibilitytools.d/DroidDeck-Proton 11-9.1}"
+PROTON="$TOOL/droiddeck-proton-wrap"
+NTDLL_SRC="$TOOL/files/lib/wine/aarch64-windows/ntdll.dll"
+SHIM="${WOW_SIGSHIM:-/usr/local/lib/libsigctx_zero.so}"
+TEBSTUB_OFFSETS="${WOW_TEBSTUB_OFFSETS:-b0a68:43240}"
+BNET="${BNET_DIR:-/root/Storage/Battle.net}"
+EXE="$BNET/Battle.net Launcher.exe"
+WOW_ROOT="${WOW_ROOT:-/root/Storage/Game}"
+ICD="${WOW_ICD:-/data/user/0/com.droiddeck.launcher/files/linux_vulkan_drivers/Mesa_Turnip_v27.0.0-20261018-r3-A8xx-Linux/icd.json}"
+LOGDIR="${WOW_LOGDIR:-/tmp/wow-launch}"
+LOG="$LOGDIR/bnet-launch.log"
+WINELOG="$LOGDIR/bnet-wine.log"
+STAMPER="${WOW_STAMPER:-/usr/local/bin/droiddeck-steamgame-stamp.sh}"
+
+mkdir -p "$LOGDIR"
+exec >>"$LOG" 2>&1
+echo "======== $(date -Iseconds) pid=$$ ========"
+echo "appid=$APPID prefix=$PREFIX tool=$TOOL"
+
+for f in "$PROTON" "$SHIM" "$EXE" "$ICD" "$NTDLL_SRC"; do
+  if [[ ! -e "$f" ]]; then echo "Launch-BattleNet: missing $f"; exit 1; fi
+done
+
+export STEAM_COMPAT_CLIENT_INSTALL_PATH="$STEAM_ROOT"
+export STEAM_COMPAT_DATA_PATH="$PREFIX"
+export SteamAppId="$APPID"
+export SteamGameId="${SteamGameId:-$APPID}"
+export VK_ICD_FILENAMES="$ICD"
+export VK_DRIVER_FILES="$ICD"
+export WINEESYNC="${WOW_WINEESYNC:-1}"
+unset PROTON_NO_ESYNC
+export LANG="${WOW_LANG:-en_US.UTF-8}"
+export LC_ALL="${WOW_LC_ALL:-en_US.UTF-8}"
+export WINEDEBUG="${WOW_WINEDEBUG:-+loaddll,+err}"
+export DXVK_LOG_LEVEL="${WOW_DXVK_LOG_LEVEL:-info}"
+export DXVK_LOG_PATH="C:\\dxvk-logs"
+mkdir -p "$PREFIX/pfx/drive_c/dxvk-logs"
+export WINE_TEBSTUB_OFFSETS="$TEBSTUB_OFFSETS"
+# FEX settings that made Battle.net (x86) run under DroidDeck-Proton before.
+export FEX_APP_DATA_LOCATION="${FEX_APP_DATA_LOCATION:-/run/droiddeck/fex-$APPID/}"
+mkdir -p "$FEX_APP_DATA_LOCATION"
+export FEX_BNET_FORCE_X86="${FEX_BNET_FORCE_X86:-1}"
+export FEX_DYNAMICL1CACHE="${FEX_DYNAMICL1CACHE:-0}"
+
+pre="${LD_PRELOAD:-}"
+pre="${pre//\/root\/.steam\/bin32\/gameoverlayrenderer.so/}"
+pre="${pre##:}"; pre="${pre%%:}"
+export LD_PRELOAD="${pre:+$pre:}$SHIM"
+echo "LD_PRELOAD=$LD_PRELOAD WINE_TEBSTUB_OFFSETS=$WINE_TEBSTUB_OFFSETS FEX_APP_DATA_LOCATION=$FEX_APP_DATA_LOCATION"
+
+# Agent knows the game as C:\Program Files (x86)\World of Warcraft (.product.db).
+PF86="$PREFIX/pfx/drive_c/Program Files (x86)"
+if [[ -d "$PF86" && ! -e "$PF86/World of Warcraft" ]]; then
+  ln -s "$WOW_ROOT" "$PF86/World of Warcraft" && echo "linked Program Files (x86)/World of Warcraft -> $WOW_ROOT"
+fi
+
+# The client maps C:\windows\system32\ntdll.dll from disk: keep the prefix copy
+# identical to the (patched) tool copy.
+SYS32="$PREFIX/pfx/drive_c/windows/system32"
+if [[ -f "$SYS32/ntdll.dll" ]] && ! cmp -s "$NTDLL_SRC" "$SYS32/ntdll.dll"; then
+  cp -f "$NTDLL_SRC" "$SYS32/ntdll.dll.bl-new" && mv -f "$SYS32/ntdll.dll.bl-new" "$SYS32/ntdll.dll"
+  echo "synced patched ntdll.dll into prefix"
+fi
+
+if [[ -x "$STAMPER" ]]; then
+  "$STAMPER" "$APPID" $$ "${DISPLAY:-:1}" >>"$LOGDIR/stamper.log" 2>&1 &
+  echo "stamper pid $!"
+fi
+
+cd "$BNET" || exit 1
+echo "exec proton waitforexitandrun $EXE (wine-log $WINELOG)"
+: >"$WINELOG"
+"$PROTON" waitforexitandrun "$EXE" >>"$WINELOG" 2>&1
+rc=$?
+echo "proton-exit $rc"
+# Proton's steam.exe may hold the ntdll copy open; re-sync for the next run if
+# setup_prefix replaced it meanwhile.
+if [[ -f "$SYS32/ntdll.dll" ]] && ! cmp -s "$NTDLL_SRC" "$SYS32/ntdll.dll"; then
+  cp -f "$NTDLL_SRC" "$SYS32/ntdll.dll.bl-new" && mv -f "$SYS32/ntdll.dll.bl-new" "$SYS32/ntdll.dll" && echo "re-synced ntdll.dll after exit"
+fi
+exit "$rc"
