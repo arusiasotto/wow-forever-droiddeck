@@ -1,7 +1,8 @@
-# WoW Forever on DroidDeck
+# wow-forever-droiddeck
 
-Helper scripts for Blizzard’s ARM64 Forever client (`WowB-ARM64.exe`) with a
-**tier-8 DroidDeck-Proton** build. This repo is **not** the game or the Proton zip.
+Helper scripts for Blizzard’s ARM64 Forever client (`WowB-ARM64.exe`) on
+[DroidDeck](https://github.com/Droid-Deck/DroidDeck) with a **tier-8 DroidDeck-Proton**
+build. This repo is **not** the game or the Proton zip.
 
 Unofficial. Not affiliated with Blizzard, DroidDeck, Valve, or Wine.
 
@@ -31,7 +32,7 @@ install -m 0644 scripts/wow-forever.env.example /usr/local/etc/
 # Optional: WoW direct tile
 install -m 0755 scripts/Launch-WoW.sh /usr/local/bin/
 install -m 0755 scripts/Launch-WoW-Storage.sh /usr/local/bin/
-install -m 0644 scripts/wow-forever-storage.env /usr/local/etc/
+install -m 0644 scripts/wow-forever-storage.env.example /usr/local/etc/wow-forever-storage.env
 ```
 
 Or use `scripts/deploy-battle-net-guest.sh` / `deploy-storage-game-guest.sh` from a
