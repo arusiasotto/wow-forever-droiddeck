@@ -27,9 +27,13 @@ push_file "$ROOT/scripts/droiddeck-steamgame-stamp.sh" /usr/local/bin/droiddeck-
 push_file "$ROOT/scripts/Launch-BattleNet.sh" /usr/local/bin/Launch-BattleNet.sh
 push_file "$ROOT/scripts/Launch-BattleNet-Proton.sh" /usr/local/bin/Launch-BattleNet-Proton.sh
 push_file "$ROOT/scripts/Launch.sh" /usr/local/bin/Launch.sh
-push_file "$ROOT/scripts/wow-forever.env" /usr/local/etc/wow-forever.env 0644
 push_file "$ROOT/scripts/wow-forever.env.example" /usr/local/etc/wow-forever.env.example 0644
+if [[ -f "$ROOT/scripts/wow-forever.env" ]]; then
+  push_file "$ROOT/scripts/wow-forever.env" /usr/local/etc/wow-forever.env 0644
+else
+  guest "install -d /usr/local/etc; cp -f /usr/local/etc/wow-forever.env.example /usr/local/etc/wow-forever.env"
+fi
 
-guest "cat /usr/local/etc/wow-forever.env; echo; head -3 /usr/local/bin/Launch-BattleNet.sh"
+guest "grep -E '^BNET_NO_STAMPER|^#' /usr/local/etc/wow-forever.env 2>/dev/null | head -5; echo; head -3 /usr/local/bin/Launch-BattleNet.sh"
 
-echo "Done. Battle.net: Launch-BattleNet.sh %command%; tier-8 compat tool; -d3d11 in Battle.net."
+echo "Done. See README: Proton … ARM64EC WoW, Launch-BattleNet.sh %command%, -d3d11 in Battle.net."
