@@ -40,9 +40,7 @@ Older direct-WoW / Storage tiles and pre–tier-8 stacks live under **[deprecate
 | Install as | From repo |
 |------------|-----------|
 | `/usr/local/bin/droiddeck-steamgame-stamp.sh` | `scripts/droiddeck-steamgame-stamp.sh` |
-| `/usr/local/bin/droiddeck-steam-stamper-wrap.sh` | `scripts/droiddeck-steam-stamper-wrap.sh` |
 | `/usr/local/bin/Launch-BattleNet.sh` | `scripts/Launch-BattleNet.sh` |
-| `/usr/local/bin/Launch-BattleNet-Proton.sh` | `scripts/Launch-BattleNet-Proton.sh` |
 | `/usr/local/etc/wow-forever.env` | copy from `scripts/wow-forever.env.example` (edit paths if needed) |
 
 **Host with adb:**
@@ -65,7 +63,7 @@ Older direct-WoW / Storage tiles and pre–tier-8 stacks live under **[deprecate
 
 Pick a **Linux Vulkan driver** in DroidDeck (Turnip, etc.).
 
-**Focus:** `Launch-BattleNet.sh` runs **`droiddeck-steam-stamper-wrap.sh`**, which starts the gamescope stamper, then **`Launch-BattleNet-Proton.sh`**. Do not point the shortcut at the Proton script alone.
+**Focus:** `Launch-BattleNet.sh` starts **`droiddeck-steamgame-stamp.sh`** in the background, then runs Proton. Only these **two** scripts are required on the guest.
 
 ---
 
@@ -91,10 +89,8 @@ Logs (default): `/tmp/wow-launch/<appid>/bnet-launch.log` (`WOW_LOGDIR` in env).
 
 | Script | Role |
 |--------|------|
-| `Launch-BattleNet.sh` | Steam entry → stamper wrap → Proton |
-| `Launch-BattleNet-Proton.sh` | Proton + `Battle.net Launcher.exe` |
-| `droiddeck-steam-stamper-wrap.sh` | Stamper + `exec` launcher |
-| `droiddeck-steamgame-stamp.sh` | Gamescope `STEAM_GAME` / focus |
+| `Launch-BattleNet.sh` | Steam entry: stamper + Proton + Battle.net |
+| `droiddeck-steamgame-stamp.sh` | Gamescope `STEAM_GAME` / focus loop |
 | `deploy-battle-net-guest.sh` | adb install §2 |
 | `install-proton-build-guest.sh` | adb + WoW-tagged Proton into `compatibilitytools.d` |
 | `rename-proton-wow-tool.sh` | Guest: rename old Proton folder to **… ARM64EC WoW** |

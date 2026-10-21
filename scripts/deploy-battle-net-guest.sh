@@ -1,5 +1,5 @@
 #!/bin/bash
-# Push peeled Battle.net launch path to DroidDeck guest.
+# Push Battle.net launch scripts (2 files) to DroidDeck guest.
 set -euo pipefail
 
 SERIAL="${ADB_SERIAL:-912601210098}"
@@ -21,11 +21,9 @@ push_file() {
   guest "echo '$b64' | base64 -d > '${dest}.tmp' && mv -f '${dest}.tmp' '$dest' && chmod $mode '$dest' && echo pushed $dest"
 }
 
-echo "Deploy peeled Battle.net launch to guest $SERIAL …"
-push_file "$ROOT/scripts/droiddeck-steam-stamper-wrap.sh" /usr/local/bin/droiddeck-steam-stamper-wrap.sh
+echo "Deploy Battle.net launch (2 scripts) to guest $SERIAL …"
 push_file "$ROOT/scripts/droiddeck-steamgame-stamp.sh" /usr/local/bin/droiddeck-steamgame-stamp.sh
 push_file "$ROOT/scripts/Launch-BattleNet.sh" /usr/local/bin/Launch-BattleNet.sh
-push_file "$ROOT/scripts/Launch-BattleNet-Proton.sh" /usr/local/bin/Launch-BattleNet-Proton.sh
 push_file "$ROOT/scripts/wow-forever.env.example" /usr/local/etc/wow-forever.env.example 0644
 if [[ -f "$ROOT/scripts/wow-forever.env" ]]; then
   push_file "$ROOT/scripts/wow-forever.env" /usr/local/etc/wow-forever.env 0644
@@ -33,6 +31,6 @@ else
   guest "install -d /usr/local/etc; cp -f /usr/local/etc/wow-forever.env.example /usr/local/etc/wow-forever.env"
 fi
 
-guest "head -5 /usr/local/etc/wow-forever.env 2>/dev/null; echo; head -3 /usr/local/bin/Launch-BattleNet.sh"
+guest "wc -l /usr/local/bin/Launch-BattleNet.sh /usr/local/bin/droiddeck-steamgame-stamp.sh; head -3 /usr/local/bin/Launch-BattleNet.sh"
 
-echo "Done. See README: Proton … ARM64EC WoW, Launch-BattleNet.sh %command%, -d3d11 in Battle.net."
+echo "Done. Steam launch options: /usr/local/bin/Launch-BattleNet.sh %command%"
