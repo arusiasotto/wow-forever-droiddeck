@@ -59,10 +59,10 @@ Start a **Steam** session once. In the Steam library, open the **Battle.net** sh
 | # | Do this | Check |
 |---|---------|--------|
 | E1 | Launch **Battle.net** from your DroidDeck tile (step C). | Launcher opens, you can log in. |
-| E2 | Left sidebar → select **WoW Forever** (beta). **Not** Classic. **Not** Retail. | Forever art / title visible. |
+| E2 | Left sidebar → select your flavor of WoW. |
 | E3 | Install WoW to **`C:\Program Files (x86)\World of Warcraft`** (default). | Install completes. |
-| E4 | **WoW Forever** → gear → **Game Settings** → **Additional command line arguments:** `-d3d11` | Only on Forever, not on Classic. |
-| E5 | Press **Play**. | `WowB-ARM64.exe` runs (Forever client). |
+| E4 | **WoW** → gear → **Game Settings** → **Additional command line arguments:** `-d3d11` |
+| E5 | Press **Play**. | 
 
 Forever files install under `_classic_beta_` inside the WoW folder — that folder name is normal.
 
