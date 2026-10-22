@@ -24,6 +24,7 @@ push_file() {
 echo "Deploy Battle.net launch (2 scripts) to guest $SERIAL …"
 push_file "$ROOT/scripts/droiddeck-steamgame-stamp.sh" /usr/local/bin/droiddeck-steamgame-stamp.sh
 push_file "$ROOT/scripts/Launch-BattleNet.sh" /usr/local/bin/Launch-BattleNet.sh
+push_file "$ROOT/scripts/wow-forever.env.example" /usr/local/etc/wow-forever.env.example 0644
 
 guest "wc -l /usr/local/bin/Launch-BattleNet.sh /usr/local/bin/droiddeck-steamgame-stamp.sh; head -3 /usr/local/bin/Launch-BattleNet.sh"
 

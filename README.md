@@ -1,69 +1,113 @@
 # wow-forever-droiddeck
 
-Launch scripts for **World of Warcraft** on [DroidDeck](https://github.com/Droid-Deck/DroidDeck): **Battle.net Steam shortcut** → **Play** in the client.
+Install **WoW Forever** on [DroidDeck](https://github.com/Droid-Deck/DroidDeck). You always start **Battle.net**, pick **WoW Forever**, then **Play**.
 
-This repo is **not** the game or Proton.
+This repo is **not** the game or Proton. Unofficial — not affiliated with Blizzard, DroidDeck, Valve, or Wine.
 
-Unofficial. Not affiliated with Blizzard, DroidDeck, Valve, or Wine.
-
-Setup helpers (adb deploy, Proton install, optional env) live under **[deprecated/scripts/](deprecated/scripts/)**.
+Optional adb helpers: [`deprecated/scripts/`](deprecated/scripts/).
 
 ---
 
-## 1. Install Proton (WoW build)
+## Installation checklist
 
-1. **[DroidDeck-Proton-WoW-arm64ec → Releases](https://github.com/arusiasotto/DroidDeck-Proton-WoW-arm64ec/releases)** — **`DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz`**.
-2. Guest (root):
+Do these **in order**. Skip nothing unless the step says optional.
 
-   ```bash
-   tar -xzf DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz -C /root/.local/share/Steam/compatibilitytools.d
-   ```
+### A. On your phone (outside the Linux guest)
 
-3. Steam **Compatibility** on the Battle.net shortcut → **`DroidDeck-Proton 11-9.1 ARM64EC WoW`**.
+| # | Do this | Check |
+|---|---------|--------|
+| A1 | Install **DroidDeck** and open it. | App runs, device supported. |
+| A2 | Download **`DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz`** ([release](https://github.com/arusiasotto/DroidDeck-Proton-WoW-arm64ec/releases)) to **Downloads**. | File on phone storage. |
+| A3 | (Optional) Install **Battle.net** under DroidDeck **Storage** if you keep the launcher on `/root/Storage/Battle.net/`. Otherwise install Battle.net later from inside the guest. | You know where `Battle.net Launcher.exe` will live. |
 
----
+### B. Inside the DroidDeck Linux guest (Proton)
 
-## 2. How DroidDeck launches the game
+You need a **root shell** in the guest once (DroidDeck terminal / adb `guest` — however you usually run commands there).
 
-DroidDeck can start the shortcut **without opening the Steam client**. That path usually **does not need** the focus helper scripts (picture and input work with plain Steam launch options).
+| # | Do this | Check |
+|---|---------|--------|
+| B1 | Extract Proton into Steam’s tool folder (adjust the path to your Download mount, often `/root/Storage/Download/` or `/sdcard/Download/`): | Folder exists on disk. |
+|   | `tar -xzf DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz -C /root/.local/share/Steam/compatibilitytools.d` | |
+| B2 | Confirm: `ls "/root/.local/share/Steam/compatibilitytools.d/DroidDeck-Proton 11-9.1 ARM64EC WoW/"` | Contains `droiddeck-proton-wrap` or `proton`. |
 
-If you **open Steam** in the session (library, updates, browsing) and launch Battle.net from there, gamescope often keeps focus on **Steam (app 769)** instead of Battle.net — **sound but no picture**. For that path, use the **launcher + stamper** in §3.
+**From a PC instead of typing in the guest:**  
+`./deprecated/scripts/install-proton-build-guest.sh /path/to/DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.zip`
 
-| DroidDeck behavior | Launch options (Battle.net shortcut) | Guest scripts |
-|--------------------|--------------------------------------|---------------|
-| **Launch without Steam** (recommended) | `%command%` | Optional — not required for focus |
-| **Steam running / launch from Steam UI** | `/usr/local/bin/Launch-BattleNet.sh %command%` | **Required:** [`Launch-BattleNet.sh`](scripts/Launch-BattleNet.sh) + [`droiddeck-steamgame-stamp.sh`](scripts/droiddeck-steamgame-stamp.sh) in `/usr/local/bin/` |
+### C. DroidDeck app settings (session + Battle.net entry)
 
-Install the two scripts (adb: **`./deprecated/scripts/deploy-battle-net-guest.sh`**) if you use the Steam-in-session column. No `/usr/local/etc/wow-forever.env` needed for a standard install.
+| # | Do this | Check |
+|---|---------|--------|
+| C1 | **Session:** choose a **Linux Vulkan driver** that works for games on your phone (e.g. Mesa Turnip A8xx). | Steam/games render, not a black screen. |
+| C2 | Add **one** game entry for Battle.net (DroidDeck “added game” / adopt Storage path — **not** a separate `WowB-ARM64.exe` or Classic tile). | Only one WoW-related launcher. |
+| C3 | **Executable:** `Battle.net Launcher.exe` (not `Battle.net.exe` alone). | Matches your install folder. |
+| C4 | **Launch options:** leave **empty** (recommended). Do **not** use `--disable-gpu` unless you are debugging a GPU crash. | Empty or `%command%` only. |
+| C5 | **How to start:** prefer **launch without opening the Steam client** (DroidDeck option on the tile). | Avoids gamescope focus issues. |
 
-Disabling the **in-game Steam overlay** alone did **not** fix the focus issue in our testing; the split above matches what we saw on device.
+**Do not** add a second DroidDeck shortcut that launches `WowB-ARM64.exe` or Classic directly — that bypasses Battle.net and often starts the **wrong** WoW product.
 
----
+### D. Steam compatibility (inside guest, for the Battle.net shortcut)
 
-## 3. Battle.net Steam shortcut
+Start a **Steam** session once. In the Steam library, open the **Battle.net** shortcut → **Properties** (or Manage → Properties):
 
-| Field | Value |
+| Field | Set to |
 |--------|--------|
-| **Target** | `Battle.net Launcher.exe` |
-| **Compatibility tool** | **DroidDeck-Proton 11-9.1 ARM64EC WoW** |
-| **Launch options** | See §2 (`%command%` or `Launch-BattleNet.sh %command%`) |
+| **Compatibility** | Force: **DroidDeck-Proton 11-9.1 ARM64EC WoW** |
+| **Launch options** | Empty, or `%command%` (same as C4) |
 
-Pick a **Linux Vulkan driver** in DroidDeck (Turnip, etc.).
+**Only if you always launch from the Steam library UI** (Steam stays open on screen): see [Steam focus workaround](#steam-focus-workaround-optional) below.
+
+### E. First-time Battle.net + Forever install
+
+| # | Do this | Check |
+|---|---------|--------|
+| E1 | Launch **Battle.net** from your DroidDeck tile (step C). | Launcher opens, you can log in. |
+| E2 | Left sidebar → select **WoW Forever** (beta). **Not** Classic. **Not** Retail. | Forever art / title visible. |
+| E3 | Install WoW to **`C:\Program Files (x86)\World of Warcraft`** (default). | Install completes. |
+| E4 | **WoW Forever** → gear → **Game Settings** → **Additional command line arguments:** `-d3d11` | Only on Forever, not on Classic. |
+| E5 | Press **Play**. | `WowB-ARM64.exe` runs (Forever client). |
+
+Forever files install under `_classic_beta_` inside the WoW folder — that folder name is normal.
+
+After the game is up, you may **close Battle.net**; WoW keeps running if you used the recommended launch path (C5).
+
+### F. Every login after that
+
+1. Start **Battle.net** (same tile as E1).  
+2. Sidebar → **WoW Forever**.  
+3. **Play**.
+
+If **Classic** starts, the wrong game was selected in the sidebar or a **second shortcut/tile** is still installed — remove it and use Battle.net only.
 
 ---
 
-## 4. WoW and play
+## Steam focus workaround (optional)
 
-1. Open Battle.net from the shortcut.
-2. Install to **`C:\Program Files (x86)\World of Warcraft`** (default).
-3. **Game Settings → Additional command line arguments:** `-d3d11`
-4. **Play**
+Use this **only** when you launch Battle.net from the **Steam client** while Steam is on screen and you get **sound but no picture**.
 
-Logs: `/tmp/wow-launch-<steam-appid>/bnet-launch.log`
+1. On PC: `./deprecated/scripts/deploy-battle-net-guest.sh`  
+2. Steam → Battle.net shortcut → **Launch options:**  
+   `/usr/local/bin/Launch-BattleNet.sh %command%`
+
+Scripts: [`Launch-BattleNet.sh`](scripts/Launch-BattleNet.sh), [`droiddeck-steamgame-stamp.sh`](scripts/droiddeck-steamgame-stamp.sh).
+
+---
+
+## Optional paths (advanced)
+
+If Battle.net or game files live on **Storage** instead of the default Proton prefix, copy [`scripts/wow-forever.env.example`](scripts/wow-forever.env.example) to `/usr/local/etc/wow-forever.env` on the guest and set `BNET_DIR` / `WOW_ROOT`. Not needed for a default install.
+
+---
+
+## Logs
+
+| When | Where |
+|------|--------|
+| Using `Launch-BattleNet.sh` | `/tmp/wow-launch-<steam-appid>/bnet-launch.log` |
+| DroidDeck bug report | Phone **Downloads → DroidDeck** (zip the folder) |
 
 ---
 
 ## Related
 
-- **Proton:** [arusiasotto/DroidDeck-Proton-WoW-arm64ec](https://github.com/arusiasotto/DroidDeck-Proton-WoW-arm64ec)
+- **Proton build:** [DroidDeck-Proton-WoW-arm64ec](https://github.com/arusiasotto/DroidDeck-Proton-WoW-arm64ec)
 - **Upstream patches:** [Droid-Deck/DroidDeck-Proton](https://github.com/Droid-Deck/DroidDeck-Proton)
