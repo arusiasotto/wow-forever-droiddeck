@@ -18,7 +18,7 @@ Do these **in order**. Skip nothing unless the step says optional.
 |---|---------|--------|
 | A1 | Install **DroidDeck** and open it. | App runs, device supported. |
 | A2 | Download **`DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz`** ([release](https://github.com/arusiasotto/DroidDeck-Proton-WoW-arm64ec/releases)) to **Downloads**. | File on phone storage. |
-| A3 | (Optional) Install **Battle.net** under DroidDeck **Storage** if you keep the launcher on `/root/Storage/Battle.net/`. Otherwise install Battle.net later from inside the guest. | You know where `Battle.net Launcher.exe` will live. |
+| A3 | Install Battle.net later as a non-Steam Game. |
 
 ### B. Inside the DroidDeck Linux guest (Proton)
 
