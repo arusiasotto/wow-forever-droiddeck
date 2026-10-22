@@ -37,13 +37,11 @@ You need a **root shell** in the guest once (DroidDeck terminal / adb `guest` �
 
 | # | Do this | Check |
 |---|---------|--------|
-| C1 | **Session:** choose a **Linux Vulkan driver** that works for games on your phone (e.g. Mesa Turnip A8xx). | Steam/games render, not a black screen. |
-| C2 | Add **one** game entry for Battle.net (DroidDeck “added game” / adopt Storage path — **not** a separate `WowB-ARM64.exe` or Classic tile). | Only one WoW-related launcher. |
-| C3 | **Executable:** `Battle.net Launcher.exe` (not `Battle.net.exe` alone). | Matches your install folder. |
-| C4 | **Launch options:** leave **empty** (recommended). Do **not** use `--disable-gpu` unless you are debugging a GPU crash. | Empty or `%command%` only. |
+| C1 | **Session:** choose a **Linux Vulkan driver** that works for games on your phone (e.g. Mesa Turnip A8xx). | 
+| C2 | Add **one** game entry for Battle.net |
+| C3 | **Executable:** `Battle.net Launcher.exe` (not `Battle.net.exe` alone). |
+| C4 | **Launch options:** leave **empty** (recommended). |
 | C5 | **How to start:** prefer **launch without opening the Steam client** (DroidDeck option on the tile). | Avoids gamescope focus issues. |
-
-**Do not** add a second DroidDeck shortcut that launches `WowB-ARM64.exe` or Classic directly — that bypasses Battle.net and often starts the **wrong** WoW product.
 
 ### D. Steam compatibility (inside guest, for the Battle.net shortcut)
 
