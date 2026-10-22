@@ -1,6 +1,8 @@
 # wow-forever-droiddeck
 
-Install **WoW Forever** on [DroidDeck](https://github.com/Droid-Deck/DroidDeck). You always start **Battle.net**, pick **WoW Forever**, then **Play**.
+Install **World of Warcraft** on [DroidDeck](https://github.com/Droid-Deck/DroidDeck) through **Battle.net** — **Retail**, **Classic**, and **Forever** (same setup; you pick the game in the launcher).
+
+Repo name is historical; this is **not** Forever-only.
 
 This repo is **not** the game or Proton. Unofficial — not affiliated with Blizzard, DroidDeck, Valve, or Wine.
 
@@ -18,7 +20,7 @@ Do these **in order**. Skip nothing unless the step says optional.
 |---|---------|--------|
 | A1 | Install **DroidDeck** and open it. | App runs, device supported. |
 | A2 | Download **`DroidDeck-Proton-11-9.1-arm64ec-wow-aarch64.tar.gz`** ([release](https://github.com/arusiasotto/DroidDeck-Proton-WoW-arm64ec/releases)) to **Downloads**. | File on phone storage. |
-| A3 | Install Battle.net later as a non-Steam Game. |
+| A3 | (Optional) Put **Battle.net** on DroidDeck **Storage**, or add it later as a **non-Steam game** in the guest. | You know where `Battle.net Launcher.exe` will live. |
 
 ### B. Inside the DroidDeck Linux guest (Proton)
 
@@ -37,12 +39,13 @@ You need a **root shell** in the guest once (DroidDeck terminal / adb `guest` �
 
 | # | Do this | Check |
 |---|---------|--------|
-| C1 | **Session:** choose a **Linux Vulkan driver** that works for games on your phone (e.g. Mesa Turnip A8xx). | 
-| C2 | Add **one** game entry for Battle.net |
-| C3 | **Executable:** `Battle.net Launcher.exe` (not `Battle.net.exe` alone). |
-| C4 | **Launch options:** leave **empty** (recommended). |
+| C1 | **Session:** choose a **Linux Vulkan driver** that works for games on your phone (e.g. Mesa Turnip A8xx). | Steam/games render, not a black screen. |
+| C2 | Add **one** game entry for **Battle.net** only (DroidDeck “added game” / adopt Storage / non-Steam game). | One launcher for all WoW products. |
+| C3 | **Executable:** `Battle.net Launcher.exe` (not `Battle.net.exe` alone). | Matches your install folder. |
+| C4 | **Launch options:** leave **empty** (recommended). Do **not** use `--disable-gpu` unless you are debugging a GPU crash. | Empty or `%command%` only. |
 | C5 | **How to start:** prefer **launch without opening the Steam client** (DroidDeck option on the tile). | Avoids gamescope focus issues. |
 
+**Do not** add extra DroidDeck shortcuts that launch a WoW `.exe` directly (`Wow.exe`, `WowClassic`, `WowB-ARM64.exe`, etc.). Use Battle.net → select product → **Play** so the correct client and updates apply.
 ### D. Steam compatibility (inside guest, for the Battle.net shortcut)
 
 Start a **Steam** session once. In the Steam library, open the **Battle.net** shortcut → **Properties** (or Manage → Properties):
@@ -54,27 +57,27 @@ Start a **Steam** session once. In the Steam library, open the **Battle.net** sh
 
 **Only if you always launch from the Steam library UI** (Steam stays open on screen): see [Steam focus workaround](#steam-focus-workaround-optional) below.
 
-### E. First-time Battle.net + Forever install
+### E. First-time Battle.net + WoW install
 
 | # | Do this | Check |
 |---|---------|--------|
 | E1 | Launch **Battle.net** from your DroidDeck tile (step C). | Launcher opens, you can log in. |
-| E2 | Left sidebar → select your flavor of WoW. |
-| E3 | Install WoW to **`C:\Program Files (x86)\World of Warcraft`** (default). | Install completes. |
-| E4 | **WoW** → gear → **Game Settings** → **Additional command line arguments:** `-d3d11` |
-| E5 | Press **Play**. | 
+| E2 | Left sidebar → select the **WoW product** you want (**Retail**, **Classic**, or **Forever**). | Correct art / title for that game. |
+| E3 | Install (or update) to **`C:\Program Files (x86)\World of Warcraft`** (default). | Install completes. |
+| E4 | That product → gear → **Game Settings** → **Additional command line arguments:** `-d3d11` | Set per product you play (each has its own gear menu). |
+| E5 | Press **Play**. | The client for **that** product starts. |
 
-Forever files install under `_classic_beta_` inside the WoW folder — that folder name is normal.
+All products share one install root; Blizzard uses subfolders such as `_retail_`, `_classic_era_`, and `_classic_beta_` (Forever) — that is normal.
 
 After the game is up, you may **close Battle.net**; WoW keeps running if you used the recommended launch path (C5).
 
 ### F. Every login after that
 
 1. Start **Battle.net** (same tile as E1).  
-2. Sidebar → **WoW Forever**.  
+2. Sidebar → the **WoW product** you want.  
 3. **Play**.
 
-If **Classic** starts, the wrong game was selected in the sidebar or a **second shortcut/tile** is still installed — remove it and use Battle.net only.
+If the **wrong** WoW starts, the other product was selected in the sidebar, or a **direct `.exe` shortcut/tile** is still installed — remove extra tiles and use Battle.net only.
 
 ---
 
